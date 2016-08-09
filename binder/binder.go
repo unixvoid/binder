@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
-	//"github.com/gorilla/mux"
+
+	"github.com/gorilla/mux"
 	"github.com/unixvoid/glogger"
 	"gopkg.in/gcfg.v1"
-	"gopkg.in/redis.v3"
+	"gopkg.in/redis.v4"
 )
 
 type Config struct {
@@ -35,8 +37,12 @@ func main() {
 	} else {
 		glogger.Info.Println("connection to redis succeeded.")
 	}
-	// kek
-	println("doing something with", redisClient)
+
+	// all handlers
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
+		upload(w, r, redisClient)
+	})
 }
 
 func readConf() {
