@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 
@@ -13,9 +14,12 @@ import (
 )
 
 type Config struct {
-	Server struct {
-		Port     int
-		Loglevel string
+	Binder struct {
+		Port          int
+		Loglevel      string
+		SecDictionary string
+		SecTokenSize  int
+		FileDirectory string
 	}
 	Redis struct {
 		Host     string
@@ -37,12 +41,31 @@ func main() {
 	} else {
 		glogger.Info.Println("connection to redis succeeded.")
 	}
+	// make sure FileDirectory exists
+	_, err = os.Stat(config.Binder.FileDirectory)
+	if err != nil {
+		glogger.Debug.Println(config.Binder.FileDirectory + " does not exist, creating")
+		os.Mkdir(config.Binder.FileDirectory, 0777)
+	}
 
 	// all handlers
+	// TODO make async
 	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		register(w, r, redisClient)
+	}).Methods("GET")
 	router.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
 		upload(w, r, redisClient)
-	})
+	}).Methods("POST")
+	router.HandleFunc("/remove", func(w http.ResponseWriter, r *http.Request) {
+		remove(w, r, redisClient)
+	}).Methods("POST")
+
+	// TODO SSL here
+	// https://github.com/unixvoid/beacon/blob/develop/beacon/beacon.go#L76-L94
+	glogger.Info.Println("binder running http on", config.Binder.Port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Binder.Port), router))
+
 }
 
 func readConf() {
@@ -56,11 +79,11 @@ func readConf() {
 
 func initLogger() {
 	// init logger
-	if config.Server.Loglevel == "debug" {
+	if config.Binder.Loglevel == "debug" {
 		glogger.LogInit(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
-	} else if config.Server.Loglevel == "cluster" {
+	} else if config.Binder.Loglevel == "cluster" {
 		glogger.LogInit(os.Stdout, os.Stdout, ioutil.Discard, os.Stderr)
-	} else if config.Server.Loglevel == "info" {
+	} else if config.Binder.Loglevel == "info" {
 		glogger.LogInit(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
 	} else {
 		glogger.LogInit(ioutil.Discard, ioutil.Discard, ioutil.Discard, os.Stderr)
