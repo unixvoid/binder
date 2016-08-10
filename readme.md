@@ -9,3 +9,6 @@ viewed with the help of nginx and autoindexing.
 `/rotate`    : rotate the admin key  
 `/upload`    : upload content to the server  
 `/remove`    : remove content to the server
+
+### Testing
+`curl -i --form sec=R5QgQwB7qKT3OlaM568vLbGQb --form filename=testraft --form file=@raft.pdf https://cryo.unixvoid.com/upload`
