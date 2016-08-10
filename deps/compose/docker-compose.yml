@@ -3,6 +3,8 @@ version: '2'
 services:
         redis:
                 build: ./redis
+                volumes:
+                        - ./redisdata:/redisbackup:rw
                 expose:
                         - "6397"
                 network_mode: "bridge"
@@ -10,6 +12,7 @@ services:
                 image: unixvoid/binder
                 volumes:
                         - datavolume:/uploads
+                          #- ./binderdata:/uploads:rw
                 depends_on:
                         - redis
                 expose:
