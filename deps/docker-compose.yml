@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+        redis:
+                build: ./redis
+                expose:
+                        - "6397"
+                network_mode: "bridge"
+        binder:
+                image: unixvoid/binder
+                depends_on:
+                        - redis
+                expose:
+                        - "8000"
+                network_mode: "bridge"
+                links:
+                        - redis
+        nginx:
+                build: ./nginx
+                ports:
+                        - "8081:8080"
+                network_mode: "bridge"
+                links:
+                        - binder

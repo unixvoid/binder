@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+        redis:
+                build: ./redis
+                expose:
+                        - "6397"
+                network_mode: "bridge"
+        binder:
+                image: unixvoid/binder
+                volumes:
+                        - datavolume:/uploads
+                depends_on:
+                        - redis
+                expose:
+                        - "8000"
+                network_mode: "bridge"
+                links:
+                        - redis
+        nginx:
+                build: ./nginx
+                volumes:
+                        - datavolume:/cryo/data/bin
+                ports:
+                        - "8081:80"
+                network_mode: "bridge"
+                links:
+                        - binder
+volumes:
+        datavolume: {}
