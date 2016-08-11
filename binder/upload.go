@@ -16,6 +16,7 @@ func upload(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 	sec := r.FormValue("sec")
 	filename := r.FormValue("filename")
 	file, handler, err := r.FormFile("file")
+	directory := r.FormValue("directory")
 
 	// make sure all params are set
 	if (len(sec) == 0) || (file == nil) {
@@ -44,9 +45,24 @@ func upload(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 		// check if auth is valid
 		if fmt.Sprintf("%x", secHash) == storedSecHash {
 			// client is authed, upload
-			f, err := os.Create(config.Binder.FileDirectory + filename)
+			var f *os.File
+			if len(directory) == 0 {
+				// directory not specified, put it at root
+				f, err = os.Create(config.Binder.FileDirectory + filename)
+			} else {
+				// directory specified
+				if strings.Contains(directory, "..") {
+					glogger.Debug.Println("directory contains malicious characters, stopping")
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
+				fullDir := fmt.Sprintf("./%s/%s/", config.Binder.FileDirectory, directory)
+				os.MkdirAll(fullDir, os.ModePerm)
+				f, err = os.Create(fullDir + filename)
+			}
 			if err != nil {
 				glogger.Error.Println("could not write file to filesystem")
+				glogger.Error.Println(err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}

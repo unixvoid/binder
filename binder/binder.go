@@ -46,7 +46,7 @@ func main() {
 	_, err = os.Stat(config.Binder.FileDirectory)
 	if err != nil {
 		glogger.Debug.Println(config.Binder.FileDirectory + " does not exist, creating")
-		os.Mkdir(config.Binder.FileDirectory, 0777)
+		os.Mkdir(config.Binder.FileDirectory, os.ModePerm)
 	} else {
 		glogger.Debug.Println("data directory exists")
 	}
