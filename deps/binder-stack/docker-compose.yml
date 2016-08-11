@@ -12,7 +12,6 @@ services:
                 image: unixvoid/binder
                 volumes:
                         - datavolume:/uploads
-                          #- ./binderdata:/uploads:rw
                 depends_on:
                         - redis
                 expose:

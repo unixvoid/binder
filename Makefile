@@ -8,6 +8,8 @@ run:
 	go run \
 		binder/binder.go \
 		binder/register.go \
+		binder/rotate.go \
+		binder/bootstrap.go \
 		binder/upload.go \
 		binder/remove.go
 stat:
@@ -25,12 +27,16 @@ docker:
 	@echo "$(IMAGE_NAME) built"
 
 compose:
-	cd deps/compose/ && \
+	cd deps/binder-stack/ && \
 		sudo docker-compose up
 
 compose-build:
-	cd deps/compose/ && \
+	cd deps/binder-stack/ && \
 		sudo docker-compose build
+
+link-volume:
+	cd deps/ && \
+		./linkvolume.sh
 
 clean:
 	rm -rf bin/

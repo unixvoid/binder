@@ -4,6 +4,7 @@
 	secdictionary 		= "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	sectokensize		= 25
 	filedirectory		= "uploads/"
+	bootstrap		= true
 [redis]
 	host			= "redis:6379"
 	password		= ""

@@ -13,16 +13,20 @@ import (
 )
 
 func upload(w http.ResponseWriter, r *http.Request, client *redis.Client) {
-	// TODO sanitize file input
 	sec := r.FormValue("sec")
 	filename := r.FormValue("filename")
-	file, _, err := r.FormFile("file")
+	file, handler, err := r.FormFile("file")
 
 	// make sure all params are set
-	if (len(sec) == 0) || (len(filename) == 0) || (file == nil) {
+	if (len(sec) == 0) || (file == nil) {
 		glogger.Debug.Println("not all parameters set")
 		w.WriteHeader(http.StatusBadRequest)
 		return
+	}
+	// set filename equal to the uploaded name if it is not set.
+	if len(filename) == 0 {
+		glogger.Debug.Println("filename not set, setting to " + handler.Filename)
+		filename = handler.Filename
 	}
 	if strings.Contains(filename, "/") {
 		glogger.Debug.Println("filename contains malicious characters, stopping")
@@ -55,8 +59,6 @@ func upload(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 
 		} else {
 			// client auth failed
-			println(fmt.Sprintf("%x", secHash))
-			println(storedSecHash)
 			glogger.Debug.Println("client auth failed")
 			w.WriteHeader(http.StatusForbidden)
 			return

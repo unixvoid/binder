@@ -20,6 +20,7 @@ type Config struct {
 		SecDictionary string
 		SecTokenSize  int
 		FileDirectory string
+		Bootstrap     bool
 	}
 	Redis struct {
 		Host     string
@@ -46,10 +47,16 @@ func main() {
 	if err != nil {
 		glogger.Debug.Println(config.Binder.FileDirectory + " does not exist, creating")
 		os.Mkdir(config.Binder.FileDirectory, 0777)
+	} else {
+		glogger.Debug.Println("data directory exists")
+	}
+
+	// if bootstrap is set, check the database
+	if config.Binder.Bootstrap {
+		go bootstrapCheck(redisClient)
 	}
 
 	// all handlers
-	// TODO make async
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
 		register(w, r, redisClient)
@@ -59,6 +66,9 @@ func main() {
 	}).Methods("POST")
 	router.HandleFunc("/remove", func(w http.ResponseWriter, r *http.Request) {
 		remove(w, r, redisClient)
+	}).Methods("POST")
+	router.HandleFunc("/rotate", func(w http.ResponseWriter, r *http.Request) {
+		rotate(w, r, redisClient)
 	}).Methods("POST")
 
 	// TODO SSL here
