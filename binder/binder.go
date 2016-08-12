@@ -39,6 +39,7 @@ func main() {
 	redisClient, err := initRedisConnection()
 	if err != nil {
 		glogger.Error.Println("redis connection cannot be made.")
+		panic(err)
 	} else {
 		glogger.Info.Println("connection to redis succeeded.")
 	}

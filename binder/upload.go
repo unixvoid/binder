@@ -16,7 +16,6 @@ func upload(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 	sec := r.FormValue("sec")
 	filename := r.FormValue("filename")
 	file, handler, err := r.FormFile("file")
-	directory := r.FormValue("directory")
 
 	// make sure all params are set
 	if (len(sec) == 0) || (file == nil) {
@@ -26,10 +25,11 @@ func upload(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 	}
 	// set filename equal to the uploaded name if it is not set.
 	if len(filename) == 0 {
+		println(filename)
 		glogger.Debug.Println("filename not set, setting to " + handler.Filename)
 		filename = handler.Filename
 	}
-	if strings.Contains(filename, "/") {
+	if strings.Contains(filename, "..") {
 		glogger.Debug.Println("filename contains malicious characters, stopping")
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -45,21 +45,26 @@ func upload(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 		// check if auth is valid
 		if fmt.Sprintf("%x", secHash) == storedSecHash {
 			// client is authed, upload
-			var f *os.File
-			if len(directory) == 0 {
-				// directory not specified, put it at root
-				f, err = os.Create(config.Binder.FileDirectory + filename)
+			fullPath := fmt.Sprintf("%s%s", config.Binder.FileDirectory, filename)
+
+			// count occurances of '/'. this is number of directories that need to be made
+			delimNum := strings.Count(filename, "/")
+
+			var createPath string
+			if delimNum == 0 {
 			} else {
-				// directory specified
-				if strings.Contains(directory, "..") {
-					glogger.Debug.Println("directory contains malicious characters, stopping")
-					w.WriteHeader(http.StatusBadRequest)
-					return
+				tmpDir := strings.Split(filename, "/")
+				for i := 0; i < delimNum; i++ {
+					createPath = fmt.Sprintf("%s/%s", createPath, tmpDir[i])
 				}
-				fullDir := fmt.Sprintf("./%s/%s/", config.Binder.FileDirectory, directory)
-				os.MkdirAll(fullDir, os.ModePerm)
-				f, err = os.Create(fullDir + filename)
 			}
+			// stripped upload dir
+			stripped := strings.Replace(config.Binder.FileDirectory, "/", "", -1)
+			//println("creating directory", fmt.Sprintf("%s%s/", stripped, createPath))
+			err := os.MkdirAll(fmt.Sprintf("%s%s/", stripped, createPath), os.ModePerm)
+
+			//println("creating file", fullPath)
+			f, err := os.Create(fullPath)
 			if err != nil {
 				glogger.Error.Println("could not write file to filesystem")
 				glogger.Error.Println(err)
