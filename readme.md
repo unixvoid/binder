@@ -5,10 +5,8 @@ and tagging binaries with metadata.  Once data is submitted it can be
 viewed with the help of nginx and autoindexing.
 
 ### TODO Endpoints
-`/register`  : register the user and assign admin key  
-`/rotate`    : rotate the admin key  
-`/upload`    : upload content to the server  
-`/remove`    : remove content to the server
+  - solidify directory creation and deletion
+  - config to allow or not allow files at root
 
 ### Testing
 `curl -i --form sec=R5QgQwB7qKT3OlaM568vLbGQb --form filename=testraft --form file=@raft.pdf https://cryo.unixvoid.com/upload`

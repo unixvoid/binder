@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -21,7 +22,7 @@ func remove(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if strings.Contains(filename, "/") {
+	if strings.Contains(filename, "..") {
 		glogger.Debug.Println("filename contains malicious characters, stopping")
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -46,12 +47,14 @@ func remove(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 			} else {
 				// client is authed, remove
 				err := os.Remove(config.Binder.FileDirectory + filename)
+				println("removing file: ", config.Binder.FileDirectory+filename)
 				if err != nil {
 					// could not delete, server error
 					glogger.Error.Println("could not remove file")
 					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
+				cleanDir(fmt.Sprintf("%s%s", config.Binder.FileDirectory, filename))
 			}
 		} else {
 			// client auth failed
@@ -66,4 +69,51 @@ func remove(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 		return
 	}
 
+}
+
+func checkDir(dirName string) (bool, error) {
+	f, err := os.Open(dirName)
+	if err != nil {
+		return false, err
+	}
+	defer f.Close()
+
+	_, err = f.Readdirnames(1)
+	if err == io.EOF {
+		return true, nil
+	}
+	return false, err
+}
+
+func cleanDir(filename string) {
+	// clean up directory resursively if empty
+	delimNum := strings.Count(filename, "/")
+	var removePath string
+	if delimNum != 0 {
+		glogger.Debug.Println("directory detected, attempting to clean")
+		// i > 1, do not remove config.Binder.FileDirectory aka root
+		for i := delimNum; i > 1; i-- {
+			tmpDir := strings.Split(filename, "/")
+			for y := 0; y < i; y++ {
+				removePath = fmt.Sprintf("%s/%s", removePath, tmpDir[y])
+			}
+			// TODO check config.Binder.FileDirectory to make sure it contains / (in binder.go)
+			fullPath := fmt.Sprintf(".%s/", removePath)
+			//glogger.Debug.Println("attempting to remove path:", fullPath)
+			isEmpty, err := checkDir(fullPath)
+			if err != nil {
+				glogger.Error.Println(err)
+			}
+			if isEmpty {
+				err := os.Remove(fullPath)
+				if err != nil {
+					glogger.Error.Println(err)
+				}
+			} else {
+				//glogger.Debug.Println("directory not empty, stopping removal sequence")
+				return
+			}
+			removePath = ""
+		}
+	}
 }
