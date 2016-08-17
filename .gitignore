@@ -1,4 +1,6 @@
+stage.tmp/
 bin/
 uploads/
 deps/binder-stack/binderdata
 deps/binder-stack/redisdata
+run.sh
