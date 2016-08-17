@@ -15,6 +15,7 @@ import (
 func upload(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 	sec := r.FormValue("sec")
 	filename := r.FormValue("filename")
+	path := r.FormValue("path")
 	file, handler, err := r.FormFile("file")
 
 	// make sure all params are set
@@ -25,7 +26,6 @@ func upload(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 	}
 	// set filename equal to the uploaded name if it is not set.
 	if len(filename) == 0 {
-		println(filename)
 		glogger.Debug.Println("filename not set, setting to " + handler.Filename)
 		filename = handler.Filename
 	}
@@ -45,26 +45,27 @@ func upload(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 		// check if auth is valid
 		if fmt.Sprintf("%x", secHash) == storedSecHash {
 			// client is authed, upload
-			fullPath := fmt.Sprintf("%s%s", config.Binder.FileDirectory, filename)
+			//fullPath := fmt.Sprintf("%s%s", config.Binder.FileDirectory, filename)
+			fullPath := fmt.Sprintf("%s%s%s", config.Binder.FileDirectory, path, filename)
 
 			// count occurances of '/'. this is number of directories that need to be made
-			delimNum := strings.Count(filename, "/")
+			delimNum := strings.Count(path, "/")
 
 			var createPath string
 			if delimNum == 0 {
 			} else {
-				tmpDir := strings.Split(filename, "/")
-				for i := 0; i < delimNum; i++ {
+				tmpDir := strings.Split(path, "/")
+				for i := 0; i <= delimNum; i++ {
 					createPath = fmt.Sprintf("%s/%s", createPath, tmpDir[i])
 				}
 			}
 			// stripped upload dir
 			stripped := strings.Replace(config.Binder.FileDirectory, "/", "", -1)
-			//println("creating directory", fmt.Sprintf("%s%s/", stripped, createPath))
-			err := os.MkdirAll(fmt.Sprintf("%s%s/", stripped, createPath), os.ModePerm)
+			fullPath = fmt.Sprintf("%s%s/", stripped, createPath)
+			err := os.MkdirAll(fullPath, os.ModePerm)
 
 			//println("creating file", fullPath)
-			f, err := os.Create(fullPath)
+			f, err := os.Create(fullPath + filename)
 			if err != nil {
 				glogger.Error.Println("could not write file to filesystem")
 				glogger.Error.Println(err)
