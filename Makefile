@@ -16,6 +16,12 @@ stat:
 	mkdir -p bin/
 	$(CGOR) $(GOC) $(GOFLAGS) -o bin/binder binder/*.go
 
+dependencies:
+	go get github.com/gorilla/mux
+	go get github.com/unixvoid/glogger
+	go get gopkg.in/gcfg.v1
+	go get gopkg.in/redis.v4
+
 docker:
 	$(MAKE) stat
 	mkdir stage.tmp/
