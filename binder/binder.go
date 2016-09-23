@@ -71,6 +71,12 @@ func main() {
 	router.HandleFunc("/rotate", func(w http.ResponseWriter, r *http.Request) {
 		rotate(w, r, redisClient)
 	}).Methods("POST")
+	router.HandleFunc("/sset", func(w http.ResponseWriter, r *http.Request) {
+		sset(w, r, redisClient)
+	}).Methods("POST")
+	router.HandleFunc("/sget", func(w http.ResponseWriter, r *http.Request) {
+		sget(w, r, redisClient)
+	}).Methods("POST")
 
 	// TODO SSL here
 	// https://github.com/unixvoid/beacon/blob/develop/beacon/beacon.go#L76-L94

@@ -11,6 +11,10 @@ run:
 		binder/rotate.go \
 		binder/bootstrap.go \
 		binder/upload.go \
+		binder/sset.go \
+		binder/sget.go \
+		binder/encrypt.go \
+		binder/decrypt.go \
 		binder/remove.go
 stat:
 	mkdir -p bin/
