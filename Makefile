@@ -11,8 +11,10 @@ run:
 		binder/rotate.go \
 		binder/bootstrap.go \
 		binder/upload.go \
-		binder/sset.go \
-		binder/sget.go \
+		binder/set_key.go \
+		binder/set_file.go \
+		binder/get_key.go \
+		binder/get_file.go \
 		binder/encrypt.go \
 		binder/decrypt.go \
 		binder/remove.go

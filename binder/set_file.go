@@ -1,19 +1,23 @@
 package main
 
 import (
+	"bufio"
+	"encoding/base64"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 
 	"github.com/unixvoid/glogger"
 	"golang.org/x/crypto/sha3"
 	"gopkg.in/redis.v4"
 )
 
-func sset(w http.ResponseWriter, r *http.Request, client *redis.Client) {
-	r.ParseForm()
+func setfile(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 	sec := r.FormValue("sec")
 	key := r.FormValue("key")
-	value := r.FormValue("value")
+	//value := r.FormValue("value")
+	value, _, err := r.FormFile("value")
 
 	// make sure all params are set
 	if (len(sec) == 0) || (len(key) == 0) {
@@ -34,9 +38,24 @@ func sset(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 			// client is authed, upload
 			keyHash := sha3.Sum512([]byte(key))
 
-			encryptedValue := encryptString(secHash, value, client)
+			// write file temporarily to get filesize
+			f, _ := os.OpenFile("tmpfile", os.O_WRONLY|os.O_CREATE, 0666)
+			defer f.Close()
+			io.Copy(f, value)
+			tmpFile, _ := os.Open("tmpfile")
+			defer tmpFile.Close()
+			fInfo, _ := tmpFile.Stat()
+			var size int64 = fInfo.Size()
+			buf := make([]byte, size)
+
+			// read file content into buffer
+			fReader := bufio.NewReader(tmpFile)
+			fReader.Read(buf)
+			fileBase64Str := base64.StdEncoding.EncodeToString(buf)
+
+			encryptedValue := encryptString(secHash, fileBase64Str, client)
 			//err := client.Set(fmt.Sprintf("hkey:%x", keyHash), fmt.Sprintf("%x", encryptedValue), 0).Err()
-			err := client.Set(fmt.Sprintf("hkey:%x", keyHash), encryptedValue, 0).Err()
+			err := client.Set(fmt.Sprintf("hkey:file:%x", keyHash), encryptedValue, 0).Err()
 			if err != nil {
 				glogger.Error.Println("error setting hkey in redis")
 			}

@@ -71,11 +71,17 @@ func main() {
 	router.HandleFunc("/rotate", func(w http.ResponseWriter, r *http.Request) {
 		rotate(w, r, redisClient)
 	}).Methods("POST")
-	router.HandleFunc("/sset", func(w http.ResponseWriter, r *http.Request) {
-		sset(w, r, redisClient)
+	router.HandleFunc("/setkey", func(w http.ResponseWriter, r *http.Request) {
+		setkey(w, r, redisClient)
 	}).Methods("POST")
-	router.HandleFunc("/sget", func(w http.ResponseWriter, r *http.Request) {
-		sget(w, r, redisClient)
+	router.HandleFunc("/setfile", func(w http.ResponseWriter, r *http.Request) {
+		setfile(w, r, redisClient)
+	}).Methods("POST")
+	router.HandleFunc("/getkey", func(w http.ResponseWriter, r *http.Request) {
+		getkey(w, r, redisClient)
+	}).Methods("POST")
+	router.HandleFunc("/getfile", func(w http.ResponseWriter, r *http.Request) {
+		getfile(w, r, redisClient)
 	}).Methods("POST")
 
 	// TODO SSL here

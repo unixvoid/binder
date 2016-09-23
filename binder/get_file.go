@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/http"
 
@@ -9,8 +10,8 @@ import (
 	"gopkg.in/redis.v4"
 )
 
-func sget(w http.ResponseWriter, r *http.Request, client *redis.Client) {
-	r.ParseForm()
+func getfile(w http.ResponseWriter, r *http.Request, client *redis.Client) {
+	//r.ParseForm()
 	sec := r.FormValue("sec")
 	key := r.FormValue("key")
 
@@ -33,13 +34,14 @@ func sget(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 			// client is authed, upload
 			keyHash := sha3.Sum512([]byte(key))
 
-			encryptedValue, err := client.Get(fmt.Sprintf("hkey:%x", keyHash)).Result()
+			encryptedValue, err := client.Get(fmt.Sprintf("hkey:file:%x", keyHash)).Result()
 			if err != nil {
-				glogger.Error.Println("error setting hkey in redis")
+				glogger.Error.Println("error getting hkey in redis")
 			}
 
 			decryptedValue := decryptString(secHash, encryptedValue)
-			fmt.Fprintf(w, "%s", decryptedValue)
+			decodeVal, _ := base64.StdEncoding.DecodeString(decryptedValue)
+			fmt.Fprintf(w, "%s", decodeVal)
 		} else {
 			// client auth failed
 			glogger.Debug.Println("client auth failed")
@@ -52,5 +54,4 @@ func sget(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
 }
