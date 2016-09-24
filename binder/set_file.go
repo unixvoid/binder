@@ -59,6 +59,7 @@ func setfile(w http.ResponseWriter, r *http.Request, client *redis.Client) {
 			if err != nil {
 				glogger.Error.Println("error setting hkey in redis")
 			}
+			os.Remove("tmpfile")
 		} else {
 			// client auth failed
 			glogger.Debug.Println("client auth failed")
