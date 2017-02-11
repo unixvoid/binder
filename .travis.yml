@@ -15,7 +15,6 @@ script:
 
 after_success:
   - make clean docker
-  - make clean aci
   - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - docker tag unixvoid/binder unixvoid/binder:develop
   - docker push unixvoid/binder:develop
