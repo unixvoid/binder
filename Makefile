@@ -17,7 +17,8 @@ run:
 		binder/get_file.go \
 		binder/encrypt.go \
 		binder/decrypt.go \
-		binder/remove.go
+		binder/remove.go \
+		binder/garbage_collect.go
 stat:
 	mkdir -p bin/
 	$(CGOR) $(GOC) $(GOFLAGS) -o bin/binder binder/*.go

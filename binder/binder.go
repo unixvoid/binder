@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/unixvoid/glogger"
@@ -15,12 +16,13 @@ import (
 
 type Config struct {
 	Binder struct {
-		Port          int
-		Loglevel      string
-		SecDictionary string
-		SecTokenSize  int
-		FileDirectory string
-		Bootstrap     bool
+		Port           int
+		Loglevel       string
+		SecDictionary  string
+		SecTokenSize   int
+		FileDirectory  string
+		Bootstrap      bool
+		GarbageCollect time.Duration
 	}
 	Redis struct {
 		Host     string
@@ -87,8 +89,15 @@ func main() {
 	// TODO SSL here
 	// https://github.com/unixvoid/beacon/blob/develop/beacon/beacon.go#L76-L94
 	glogger.Info.Println("binder running http on", config.Binder.Port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Binder.Port), router))
 
+	if config.Binder.GarbageCollect != 0 {
+		glogger.Debug.Println("spawning gc daemon.")
+		go garbageCollectDaemon(config.Binder.GarbageCollect)
+	} else {
+		glogger.Debug.Println("skipping gc daemon.")
+	}
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Binder.Port), router))
 }
 
 func readConf() {

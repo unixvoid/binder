@@ -1,10 +1,12 @@
 [binder]
-	port			= 8000
+	port			= 8080
 	loglevel		= "debug"
 	secdictionary 		= "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	sectokensize		= 25
 	filedirectory		= "uploads/"
 	bootstrap		= true
+	garbagecollect		= 1
+
 [redis]
-	host			= "redis:6379"
+	host			= "localhost:6379"
 	password		= ""
