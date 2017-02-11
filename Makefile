@@ -3,6 +3,7 @@ GOFLAGS=-a -ldflags '-s'
 CGOR=CGO_ENABLED=0
 IMAGE_NAME=unixvoid/binder
 DOCKER_OPTIONS="--no-cache"
+GIT_HASH=$(shell git rev-parse HEAD | head -c 10)
 
 run:
 	go run \
@@ -21,7 +22,7 @@ run:
 		binder/garbage_collect.go
 stat:
 	mkdir -p bin/
-	$(CGOR) $(GOC) $(GOFLAGS) -o bin/binder binder/*.go
+	$(CGOR) $(GOC) $(GOFLAGS) -o bin/binder-$(GIT_HASH)-linux-amd64 binder/*.go
 
 dependencies:
 	go get github.com/gorilla/mux
