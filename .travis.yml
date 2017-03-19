@@ -8,7 +8,8 @@ services:
   - redis-server
 
 before_install:
-  - sudo apt install ca-certificates
+        - sudo apt-get update
+        - sudo apt-get install ca-certificates
 
 install:
   - make dependencies
