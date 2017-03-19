@@ -34,7 +34,7 @@ dependencies:
 	go get gopkg.in/redis.v4
 	go get golang.org/x/crypto/sha3
 
-prep_aci:	stat
+prep_standalone_aci:	stat
 	mkdir -p stage.tmp/
 	cp -R deps/binder-layout stage.tmp/
 	# alpine fs
@@ -66,14 +66,14 @@ prep_aci:	stat
 	cp deps/nginx/mime.types stage.tmp/binder-layout/rootfs/nginx/conf/
 	cp deps/manifest.json stage.tmp/binder-layout/manifest
 
-build_aci: prep_aci
+build_standalone_aci: prep_aci
 	# build image
 	cd stage.tmp/ && \
 		actool build binder-layout binder.aci && \
 		mv binder.aci ../
 	@echo "binder.aci built"
 
-build_travis_aci: prep_aci
+build_travis_standalone_aci: prep_aci
 	wget https://github.com/appc/spec/releases/download/v0.8.7/appc-v0.8.7.tar.gz
 	tar -zxf appc-v0.8.7.tar.gz
 	# build image
