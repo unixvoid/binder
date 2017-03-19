@@ -38,18 +38,18 @@ prep_aci:	stat
 	mkdir -p stage.tmp/
 	cp -R deps/binder-layout stage.tmp/
 	# alpine fs
-	wget -O alpinefs.tar.gz $(ALPINE_FS)
+	wget --no-check-certificate -O alpinefs.tar.gz $(ALPINE_FS)
 	tar -xzf alpinefs.tar.gz -C stage.tmp/binder-layout/rootfs/
 	rm alpinefs.tar.gz
 	# redis fs
-	wget -O redisfs.tar.gz $(REDIS_FS)
+	wget --no-check-certificate -O redisfs.tar.gz $(REDIS_FS)
 	tar -xzf redisfs.tar.gz -C stage.tmp/binder-layout/rootfs/
 	rm redisfs.tar.gz
 	# redis bin
-	wget -O stage.tmp/binder-layout/rootfs/bin/redis $(REDIS_BIN)
+	wget --no-check-certificate -O stage.tmp/binder-layout/rootfs/bin/redis $(REDIS_BIN)
 	chmod +x stage.tmp/binder-layout/rootfs/bin/redis
 	# nginx bin
-	wget -O stage.tmp/binder-layout/rootfs/bin/nginx $(NGINX_BIN)
+	wget --no-check-certificate -O stage.tmp/binder-layout/rootfs/bin/nginx $(NGINX_BIN)
 	chmod +x stage.tmp/binder-layout/rootfs/bin/nginx
 	# add binder + misc files
 	cp bin/* stage.tmp/binder-layout/rootfs/bin/binder

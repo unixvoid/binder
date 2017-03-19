@@ -12,7 +12,7 @@ install:
 script:
   - make stat
 
-#after_success:
+after_success:
   - make clean build_travis_aci
   - mv binder.aci binder-latest-linux-amd64.aci
   # pull unixvoid gpg keys
