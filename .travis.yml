@@ -1,10 +1,15 @@
 language: go
+sudo: required
 
 go:
   - 1.7
 
 services:
   - redis-server
+
+before_install:
+  - sudo apt update
+  - sudo apt install ca-certificates
 
 install:
   - make dependencies
