@@ -1,12 +1,10 @@
 language: go
 
 go:
-  - 1.5.4
-  - 1.6
+  - 1.7
 
 services:
   - redis-server
-  - docker
 
 install:
   - make dependencies
@@ -14,11 +12,11 @@ install:
 script:
   - make stat
 
-after_success:
-  - make clean docker
-  - make clean aci
-  - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-  - docker tag unixvoid/binder unixvoid/binder:develop
-  - docker push unixvoid/binder:develop
-  - curl -i --form sec=$BINDER_SEC --form file=@`ls bin/binder*` --form path=binder/ https://cryo.unixvoid.com/upload
-  - curl -i --form sec=$BINDER_SEC --form file=@`ls bin/binder*` --form filename=binder-latest-linux-amd64 --form path=binder/ https://cryo.unixvoid.com/upload
+#after_success:
+#  - make clean docker
+#  - make clean aci
+#  - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+#  - docker tag unixvoid/binder unixvoid/binder:develop
+#  - docker push unixvoid/binder:develop
+#  - curl -i --form sec=$BINDER_SEC --form file=@`ls bin/binder*` --form path=binder/ https://cryo.unixvoid.com/upload
+#  - curl -i --form sec=$BINDER_SEC --form file=@`ls bin/binder*` --form filename=binder-latest-linux-amd64 --form path=binder/ https://cryo.unixvoid.com/upload
