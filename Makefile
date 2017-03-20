@@ -34,6 +34,14 @@ dependencies:
 	go get gopkg.in/redis.v4
 	go get golang.org/x/crypto/sha3
 
+pre_api_aci:	stat
+	mkdir -p stage.tmp/binder-api-layout/rootfs/
+	# copy in binder and its conf
+	cp bin/binder stage.tmp/binder-api-layout/rootfs/
+	cp config.gcfg stage.tmp/binder-api-layout/rootfs/
+	# copy in manifest
+	cp deps/manifest.api.json stage.tmp/binder-api-layout/rootfs/manifest
+
 prep_standalone_aci:	stat
 	mkdir -p stage.tmp/
 	cp -R deps/binder-layout stage.tmp/
@@ -82,6 +90,23 @@ build_travis_standalone_aci: prep_standalone_aci
 		mv binder.aci ../
 	rm -rf appc-v0.8.7*
 	@echo "binder.aci built"
+
+build_api_aci: prep_api_aci
+	# build image
+	cd stage.tmp/ && \
+		actool build binder-api-layout binder-api.aci && \
+		mv binder-api.aci ../
+	@echo "binder-api.aci built"
+
+build_travis_api_aci: prep_api_aci
+	wget https://github.com/appc/spec/releases/download/v0.8.7/appc-v0.8.7.tar.gz
+	tar -zxf appc-v0.8.7.tar.gz
+	# build image
+	cd stage.tmp/ && \
+		../appc-v0.8.7/actool build binder-api-layout binder-api.aci && \
+		mv binder-api.aci ../
+	rm -rf appc-v0.8.7*
+	@echo "binder-api.aci built"
 
 docker:
 	$(MAKE) stat

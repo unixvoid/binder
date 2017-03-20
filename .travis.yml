@@ -14,6 +14,7 @@ script:
   - make stat
 
 after_success:
+  ### build and push standalone aci
   - make clean build_travis_standalone_aci
   - mv binder.aci binder-latest-linux-amd64.aci
   # pull unixvoid gpg keys
@@ -25,3 +26,12 @@ after_success:
   # upload binder aci image
   - curl -i --form sec=$BINDER_SEC --form file=@binder-latest-linux-amd64.aci --form path=rkt/binder/standalone/ https://cryo.unixvoid.com/upload
   - curl -i --form sec=$BINDER_SEC --form file=@binder-latest-linux-amd64.aci.asc --form path=rkt/binder/standalone/ https://cryo.unixvoid.com/upload
+  ### build and push api aci
+  - make clean build_travis_api_aci
+  - mv binder-api.aci binder-api-latest-linux-amd64.aci
+  # sign aci
+  - cp deps/signapi.sh . && chmod +x signapi.sh
+  - ./signapi.sh $GPG_SEC
+  # upload binder aci image
+  - curl -i --form sec=$BINDER_SEC --form file=@binder-api-latest-linux-amd64.aci --form path=rkt/binder/api/ https://cryo.unixvoid.com/upload
+  - curl -i --form sec=$BINDER_SEC --form file=@binder-api-latest-linux-amd64.aci.asc --form path=rkt/binder/api/ https://cryo.unixvoid.com/upload
