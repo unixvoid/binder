@@ -5,6 +5,7 @@
 	sectokensize		= 25
 	filedirectory		= "uploads/"
 	bootstrap		= true
+	delay			= 1
 [redis]
 	host			= "127.0.0.1:6379"
 	password		= ""

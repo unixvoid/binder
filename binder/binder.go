@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/unixvoid/glogger"
@@ -21,6 +22,7 @@ type Config struct {
 		SecTokenSize  int
 		FileDirectory string
 		Bootstrap     bool
+		Delay         int
 	}
 	Redis struct {
 		Host     string
@@ -36,6 +38,14 @@ func main() {
 	// initalize conf and logs
 	readConf()
 	initLogger()
+
+	// sleep if required before redis connection is made
+	if config.Binder.Delay != 0 {
+		glogger.Debug.Printf("sleeping %d seconds before startup\n", config.Binder.Delay)
+		time.Sleep(time.Duration(config.Binder.Delay) * time.Second)
+	}
+
+	// start redis connection
 	redisClient, err := initRedisConnection()
 	if err != nil {
 		glogger.Error.Println("redis connection cannot be made.")
