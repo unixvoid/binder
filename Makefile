@@ -34,7 +34,7 @@ dependencies:
 	go get gopkg.in/redis.v4
 	go get golang.org/x/crypto/sha3
 
-pre_api_aci:	stat
+prep_api_aci:	stat
 	mkdir -p stage.tmp/binder-api-layout/rootfs/
 	# copy in binder and its conf
 	cp bin/binder stage.tmp/binder-api-layout/rootfs/
