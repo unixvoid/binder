@@ -40,7 +40,7 @@ prep_api_aci:	stat
 	cp bin/binder stage.tmp/binder-api-layout/rootfs/
 	cp config.gcfg stage.tmp/binder-api-layout/rootfs/
 	# copy in manifest
-	cp deps/manifest.api.json stage.tmp/binder-api-layout/rootfs/manifest
+	cp deps/manifest.api.json stage.tmp/binder-api-layout/manifest
 
 prep_standalone_aci:	stat
 	mkdir -p stage.tmp/
