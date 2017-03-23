@@ -28,6 +28,13 @@
             "protocol": "tcp",
             "port": 8000
         }
+        ],
+        "mountPoint": [
+        {
+            "name": "data",
+            "path": "/uploads/",
+            "readOnly": "false"
+        }
         ]
     },
     "annotations": [
