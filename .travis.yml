@@ -25,6 +25,9 @@ after_success:
   - curl -i --form sec=$BINDER_SEC --form file=@`ls bin/binder*` --form path=binder/ https://cryo.unixvoid.com/upload
   - curl -i --form sec=$BINDER_SEC --form file=@`ls bin/binder*` --form filename=binder-latest-linux-amd64 --form path=binder/ https://cryo.unixvoid.com/upload
   ### build and push api aci
+  # pull gpg keys
+  - curl -d sec=$BINDER_SEC -d key=unixvoid.pub https://cryo.unixvoid.com/getfile --output unixvoid.pub
+  - curl -d sec=$BINDER_SEC -d key=unixvoid.sec https://cryo.unixvoid.com/getfile --output unixvoid.sec
   - make clean build_travis_api_aci
   - mv binder-api.aci binder-api-latest-linux-amd64.aci
   # sign aci
