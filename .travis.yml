@@ -17,7 +17,7 @@ script:
 after_success:
   ### build and push to dockerhub
   - make clean docker
-  - make clean build_api_aci
+  - make clean build_travis_api_aci
   - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - docker tag unixvoid/binder unixvoid/binder:develop
   - docker push unixvoid/binder:develop
