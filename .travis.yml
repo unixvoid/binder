@@ -6,6 +6,7 @@ go:
 
 services:
   - redis-server
+  - docker
 
 install:
   - make dependencies
@@ -16,7 +17,7 @@ script:
 after_success:
   ### build and push to dockerhub
   - make clean docker
-  - make clean aci
+  - make clean build_api_aci
   - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - docker tag unixvoid/binder unixvoid/binder:develop
   - docker push unixvoid/binder:develop
