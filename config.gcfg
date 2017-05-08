@@ -1,10 +1,10 @@
 [binder]
-	port			= 8000
-	loglevel		= "debug"
-	secdictionary 		= "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-	sectokensize		= 25
-	filedirectory		= "uploads/"
-	bootstrap		= true
+  port            = 8000
+  loglevel        = "debug"
+  secdictionary   = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  sectokensize    = 25
+  filedirectory   = "uploads/"
+  bootstrap       = true
 [redis]
-	host			= "redis:6379"
-	password		= ""
+  host            = "redis:6379"
+  password        = ""
