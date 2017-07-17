@@ -10,7 +10,7 @@ to binder.  You can see the project in work over
   
 Another use of this project is to auto push ACI/rkt images for public
 consumption.  Whenever someone does a `rkt fetch unixvoid.com/<project>`, rkt
-will be redirected to [binder](https://cryo.unixvoid.com/bin/rkt/) for the aci
+will be redirected to [binder](https://cryo.unixvoid.com/bin/rkt) for the aci
 fetch.  
   
 The project is intended ony for public storage as any file that is uploaded is
@@ -47,11 +47,7 @@ There are 3 main ways to run binder:
 3. **ACI/rkt**: WIP
 
 
-## Public file storate
-TODO
-## Private file/key storage
-TODO
-## Configuration
-TODO
-## API Guide
-TODO
+## Documentation
+All documentation is in the [wiki](https://unixvoid.github.io/binder_docs/)
+* [API](https://unixvoid.github.io/binder_docs/api/)
+* [Configuration](https://unixvoid.github.io/binder_docs/configuration/)
