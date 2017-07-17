@@ -47,17 +47,7 @@ There are 3 main ways to run binder:
 3. **ACI/rkt**: WIP
 
 
-## TODO
-Rkt build (standalone and w/ nginx)  
-Standalone docker build  
-Updated docs (see template below)  
-
-
-## Public file storate
-TODO
-## Private file/key storage
-TODO
-## Configuration
-TODO
-## API Guide
-TODO
+## Documentation
+All documentation is in the [wiki](https://unixvoid.github.io/binder_docs/)
+* [API](https://unixvoid.github.io/binder_docs/api/)
+* [Configuration](https://unixvoid.github.io/binder_docs/configuration/)
